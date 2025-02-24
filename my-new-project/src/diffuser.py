@@ -109,10 +109,10 @@ def generate_nft_collection(base_image, options, prompt):
     print(f"Generated {len(variations)} variations and {len(gifs)} GIFs")
     return variations, gifs
 
-# Premium feature checker (simulated)
+# Premium feature checker (set to True for testing)
 def is_premium_user():
-    # Placeholder for premium check (e.g., API key, user login)
-    return False  # Default to non-premium for testing
+    # Temporarily assume premium access for testing
+    return True  # Enable premium features during testing
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -146,8 +146,8 @@ def home():
         # Generate NFTs
         variations, _ = generate_nft_collection(base_image, options, prompt)
         
-        # Generate GIFs if premium feature enabled
-        if 'create_gifs' in request.form and is_premium_user():
+        # Generate GIFs (premium enabled for testing)
+        if is_premium_user():
             _, gifs = generate_nft_collection(base_image, options, prompt)
         else:
             print("GIF creation requires premium access")
