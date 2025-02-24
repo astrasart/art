@@ -1,21 +1,42 @@
-def calculate_diffusion_coefficient(temperature, pressure):
-    """Calculate the diffusion coefficient based on temperature and pressure."""
-    # Placeholder formula for diffusion coefficient
-    return (temperature * pressure) / 1000
+from flask import Flask, request, render_template
+from diffusers import StableDiffusionPipeline
+import torch
+from io import BytesIO
+import base64
 
-def simulate_diffusion(initial_concentration, diffusion_coefficient, time):
-    """Simulate the diffusion process over a given time."""
-    # Placeholder simulation logic
-    return initial_concentration * (1 - diffusion_coefficient * time)
+# Initialize Flask app
+app = Flask(__name__)
 
+# Load Stable Diffusion model (once at startup)
+print("Torch version:", torch.__version__)
+print("CUDA available:", torch.cuda.is_available())
+device = "mps" if torch.backends.mps.is_available() else "cpu"  # Use MPS on M1/M2 Macs if available
+model_id = "runwayml/stable-diffusion-v1-5"
+print("Loading model...")
+pipe = StableDiffusionPipeline.from_pretrained(model_id)
+pipe = pipe.to(device)
+print(f"Model loaded on {device}")
+
+# Home route with form and image display
+@app.route("/", methods=["GET", "POST"])
+def home():
+    image_data = None
+    prompt = None
+    
+    if request.method == "POST":
+        prompt = request.form.get("prompt")
+        if prompt:
+            print(f"Generating image for: {prompt}")
+            image = pipe(prompt).images[0]
+            
+            # Convert image to base64 for display
+            buffered = BytesIO()
+            image.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+            image_data = f"data:image/png;base64,{img_str}"
+    
+    return render_template("index.html", image_data=image_data, prompt=prompt)
+
+# Run the app
 if __name__ == "__main__":
-    # Example usage
-    temp = 300  # Kelvin
-    pres = 101325  # Pascals
-    initial_conc = 1.0  # Initial concentration
-    time = 10  # Time in seconds
-
-    diffusion_coefficient = calculate_diffusion_coefficient(temp, pres)
-    final_concentration = simulate_diffusion(initial_conc, diffusion_coefficient, time)
-
-    print(f"Final concentration after {time} seconds: {final_concentration}")
+    app.run(debug=True, host="0.0.0.0", port=5000)

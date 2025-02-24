@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Generation Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
+        h1 { color: #333; }
+        form { margin: 20px 0; }
+        input[type="text"] { width: 300px; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        img { max-width: 80%; margin-top: 20px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Image Generation Chatbot</h1>
+    <form method="POST">
+        <input type="text" name="prompt" placeholder="Enter a prompt (e.g., 'A futuristic cityscape')" value="{{ prompt or '' }}" required>
+        <button type="submit">Generate</button>
+    </form>
+    {% if image_data %}
+        <h3>Generated for: "{{ prompt }}"</h3>
+        <img src="{{ image_data }}" alt="Generated Image">
+    {% endif %}
+</body>
+</html>
