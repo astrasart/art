@@ -30,11 +30,11 @@
         }
         form {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-bottom: 20px;
         }
-        input[type="text"] {
-            flex: 1;
+        input[type="text"], input[type="file"] {
             padding: 12px;
             font-size: 16px;
             border: 1px solid #444;
@@ -42,6 +42,11 @@
             background-color: #333;
             color: #e0e0e0;
             outline: none;
+        }
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
         }
         button {
             padding: 12px 24px;
@@ -66,7 +71,7 @@
             color: #00b4d8;
             margin-top: 10px;
         }
-        .gallery {
+        .gallery, .gif-gallery {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
@@ -77,21 +82,29 @@
             background-color: #333;
             border-radius: 5px;
         }
-        .gallery img {
+        .gallery img, .gif-gallery img {
             width: 100px;
             height: 100px;
             object-fit: cover;
             border-radius: 5px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        .info {
+        .info, .error {
             text-align: center;
             margin-top: 20px;
+        }
+        .error {
+            color: #ff5555;
+        }
+        .premium {
+            color: #ff5555;
+            margin-top: 10px;
         }
     </style>
     <script>
         function showLoading() {
             document.getElementById("generateBtn").disabled = true;
+            document.getElementById("createGifsBtn").disabled = true;
             document.getElementById("loading").style.display = "block";
         }
     </script>
@@ -99,19 +112,42 @@
 <body>
     <div class="container">
         <h1>NFT Collection Generator</h1>
-        <form method="POST" onsubmit="showLoading()">
-            <input type="text" name="prompt" placeholder="Enter a prompt (e.g., 'A futuristic cityscape')" value="{{ prompt or '' }}" required>
-            <button type="submit" id="generateBtn">Generate 100 NFTs</button>
+        <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            <input type="text" name="prompt" placeholder="Enter a prompt (optional if uploading)" value="{{ prompt or '' }}">
+            <input type="file" name="image" accept="image/*">
+            <div class="options">
+                <label><input type="checkbox" name="hue"> Hue Shift</label>
+                <label><input type="checkbox" name="brightness"> Brightness</label>
+                <label><input type="checkbox" name="contrast"> Contrast</label>
+                <label><input type="checkbox" name="posterize"> Posterize</label>
+                <label><input type="checkbox" name="neon"> Neon Border</label>
+            </div>
+            <button type="submit" id="generateBtn">Generate 300 NFTs</button>
+            <button type="submit" name="create_gifs" id="createGifsBtn" {% if not gifs %}disabled{% endif %}>Create 100 GIFs (Premium)</button>
+            {% if not gifs %}
+                <div class="premium">GIF creation requires premium access.</div>
+            {% endif %}
         </form>
-        <div id="loading">Generating 100 NFTs... Please wait (~1-2 minutes)</div>
+        <div id="loading">Generating... Please wait (~2-3 minutes)</div>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
         {% if variations %}
-            <h3>Showing {{ total_nfts }} NFTs for: "{{ prompt }}"</h3>
+            <h3>Showing {{ total_nfts }} NFTs for: "{{ prompt or 'Uploaded Image' }}"</h3>
             <div class="gallery">
                 {% for var in variations %}
                     <img src="{{ var }}" alt="NFT Variation">
                 {% endfor %}
             </div>
-            <div class="info">All {{ total_nfts }} NFTs saved in the 'nfts' folder.</div>
+            {% if gifs %}
+                <h3>Showing 100 Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
+                <div class="gif-gallery">
+                    {% for gif in gifs %}
+                        <img src="{{ gif }}" alt="GIF Variation">
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="info">All {{ total_nfts }} NFTs saved in the 'nfts' folder. GIFs (if created) saved in 'nfts' folder.</div>
         {% endif %}
     </div>
 </body>

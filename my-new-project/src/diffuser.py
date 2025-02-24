@@ -3,12 +3,17 @@ from diffusers import StableDiffusionPipeline
 import torch
 from io import BytesIO
 import base64
-from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps, ImageDraw
 import random
 import os
+import colorsys
+from werkzeug.utils import secure_filename
 
-# Initialize Flask app
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+output_dir = "nfts"
+os.makedirs(output_dir, exist_ok=True)
 
 # Load Stable Diffusion model
 print("Torch version:", torch.__version__)
@@ -21,84 +26,133 @@ pipe = pipe.to(device)
 pipe.enable_attention_slicing()
 print(f"Model loaded on {device}")
 
-# Ensure output directory exists
-output_dir = "nfts"
-os.makedirs(output_dir, exist_ok=True)
+# Generate 300 distinct RGB colors (blues/neons for right image style)
+def generate_unique_colors(count=300):
+    colors = []
+    for i in range(count):
+        hue = (i / count) * 0.7  # Focus on blue/neon hues (0.5-0.7 range)
+        rgb = colorsys.hsv_to_rgb(hue, 0.9, 0.9)  # High saturation/value for neon
+        colors.append(tuple(int(x * 255) for x in rgb))
+    return colors
 
-# Function to generate a single base image
-def generate_base_image(prompt):
-    generator = torch.Generator(device=device).manual_seed(random.randint(0, 1000000))
-    return pipe(
-        prompt,
-        negative_prompt="blurry, low quality, distorted, pixelated",
-        num_inference_steps=50,
-        guidance_scale=7.5,
-        generator=generator
-    ).images[0]
-
-# Function to apply unique effects
-def create_variation(base_image, index):
-    img = base_image.copy()
+# Apply drastic effects to match the right image (futuristic, blue-lit robot)
+def create_variation(base_image, index, bg_color, options, target_style='right'):
+    img = base_image.copy().convert("RGB")
     
-    # Random effects for uniqueness (more variety)
-    effect_combo = random.randint(1, 31)  # 2^5 - 1 for 32 possible combos
-    if effect_combo & 1:
-        img = ImageEnhance.Color(img).enhance(random.uniform(0.5, 1.5))  # Hue shift
-    if effect_combo & 2:
-        img = ImageEnhance.Brightness(img).enhance(random.uniform(0.6, 1.4))
-    if effect_combo & 4:
-        img = ImageEnhance.Contrast(img).enhance(random.uniform(0.7, 1.3))
-    if effect_combo & 8:
-        img = img.filter(ImageFilter.GaussianBlur(radius=random.uniform(0.1, 0.5)))
-    if effect_combo & 16:
-        img = ImageEnhance.Sharpness(img).enhance(random.uniform(0.5, 2.0))  # Sharpen or soften
+    # Apply background color (blue/neon for right style)
+    img_with_bg = Image.new("RGB", img.size, bg_color)
+    img_with_bg.paste(img, (0, 0), img.split()[3] if img.mode == "RGBA" else None)
+    img = img_with_bg
     
-    # Additional random effects
-    if random.random() > 0.5:
-        tint = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        img = ImageOps.colorize(img.convert("L"), black=(0, 0, 0), white=tint)
-    if random.random() > 0.6:
-        img = ImageOps.mirror(img)
-    if random.random() > 0.6:
-        img = ImageOps.flip(img)  # Vertical flip
-    if random.random() > 0.5:
-        img = img.rotate(random.randint(-20, 20))
-    if random.random() > 0.7:
-        img = img.filter(ImageFilter.EDGE_ENHANCE)  # Edge enhancement
+    # Test and apply selected effects (debug prints for verification)
+    if 'hue' in options:
+        img = ImageEnhance.Color(img).enhance(random.uniform(0.0, 2.0))
+        print(f"NFT {index}: Applied drastic hue shift (blue/neon)")
+    if 'brightness' in options:
+        img = ImageEnhance.Brightness(img).enhance(random.uniform(0.2, 1.8))
+        print(f"NFT {index}: Applied drastic brightness")
+    if 'contrast' in options:
+        img = ImageEnhance.Contrast(img).enhance(random.uniform(0.5, 2.5))
+        print(f"NFT {index}: Applied drastic contrast")
+    if 'posterize' in options:
+        img = ImageOps.posterize(img, random.randint(2, 4))
+        print(f"NFT {index}: Applied posterization")
+    if 'neon' in options:
+        draw = ImageDraw.Draw(img)
+        neon_color = (0, 0, random.randint(200, 255))  # Blue/neon for right style
+        draw.rectangle([0, 0, img.width, img.height], outline=neon_color, width=15)
+        print(f"NFT {index}: Applied neon border (blue)")
     
-    # Save to file
     filename = f"{output_dir}/nft_{index:03d}.png"
     img.save(filename)
+    print(f"Saved NFT {index:03d} to {filename}")
     
-    # Return base64 for display
     buffered = BytesIO()
     img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
-    return f"data:image/png;base64,{img_str}"
+    return img, f"data:image/png;base64,{img_str}"
 
-# Generate 100 unique variations from one base image
-def generate_nft_collection(prompt):
-    print("Generating base image...")
-    base_image = generate_base_image(prompt)
+# Generate 300 variations and prepare for 100 GIFs
+def generate_nft_collection(base_image, options, prompt):
+    print("Creating 300 unique variations...")
+    colors = generate_unique_colors(300)
+    variations = []
+    images = []  # Store all images for GIF creation
     
-    print("Creating 100 unique variations...")
-    variations = [create_variation(base_image, i) for i in range(100)]
+    for i in range(300):
+        img, variation = create_variation(base_image, i, colors[i], options, target_style='right')
+        variations.append(variation)
+        images.append(img)
     
-    return variations
+    # Generate 100 unique GIFs from the 300 images (3 frames each, non-overlapping)
+    gifs = []
+    for i in range(0, 300, 3):  # Step by 3 to use 3 images per GIF
+        if i + 2 < 300:  # Ensure we have 3 images
+            gif_frames = [images[i], images[i + 1], images[i + 2]]
+            
+            # Apply drastic changes for flashing effect
+            for j, frame in enumerate(gif_frames):
+                if 'hue' in options:
+                    frame = ImageEnhance.Color(frame).enhance((j + 1) * 0.8)
+                if 'brightness' in options:
+                    frame = ImageEnhance.Brightness(frame).enhance(0.3 + j * 0.7)
+                if 'contrast' in options:
+                    frame = ImageEnhance.Contrast(frame).enhance(1.5 + j * 0.5)
+                gif_frames[j] = frame
+            
+            gif_path = os.path.join(output_dir, f"gif_{prompt[:10] if prompt else 'uploaded'}_{i//3:03d}_{random.randint(0, 9999)}.gif")
+            gif_frames[0].save(gif_path, save_all=True, append_images=gif_frames[1:], duration=150, loop=0)
+            with open(gif_path, "rb") as gif_file:
+                gif_str = base64.b64encode(gif_file.read()).decode("utf-8")
+            gifs.append(gif_str)
+    
+    print(f"Generated {len(variations)} variations and {len(gifs)} GIFs")
+    return variations, gifs
 
-# Home route
+# Premium feature checker (simulated)
+def is_premium_user():
+    # Placeholder for premium check (e.g., API key, user login)
+    return False  # Default to non-premium for testing
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     variations = []
+    gifs = []
     prompt = None
     
     if request.method == "POST":
-        prompt = request.form.get("prompt")
-        if prompt:
-            print(f"Generating NFT collection for: {prompt}")
-            variations = generate_nft_collection(prompt)
+        options = {
+            'hue': 'hue' in request.form,
+            'brightness': 'brightness' in request.form,
+            'contrast': 'contrast' in request.form,
+            'posterize': 'posterize' in request.form,
+            'neon': 'neon' in request.form
+        }
+        
+        if 'image' in request.files and request.files['image'].filename:
+            file = request.files['image']
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            base_image = Image.open(file_path).convert("RGBA")
+            print("Using uploaded image as base...")
+            prompt = "Uploaded Image"
+        else:
+            prompt = request.form.get("prompt", "")
+            if not prompt:
+                return render_template("index.html", error="Please provide a prompt or upload an image")
+            base_image = generate_base_image(prompt)
+        
+        # Generate NFTs
+        variations, _ = generate_nft_collection(base_image, options, prompt)
+        
+        # Generate GIFs if premium feature enabled
+        if 'create_gifs' in request.form and is_premium_user():
+            _, gifs = generate_nft_collection(base_image, options, prompt)
+        else:
+            print("GIF creation requires premium access")
     
-    return render_template("index.html", variations=variations, prompt=prompt, total_nfts=len(variations))
+    return render_template("index.html", variations=variations, gifs=gifs, prompt=prompt, total_nfts=len(variations))
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
