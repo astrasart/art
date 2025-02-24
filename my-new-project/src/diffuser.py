@@ -7,7 +7,9 @@ from PIL import Image, ImageEnhance, ImageFilter, ImageOps, ImageDraw
 import random
 import os
 import colorsys
+import hashlib
 from werkzeug.utils import secure_filename
+import json
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -72,7 +74,7 @@ def create_variation(base_image, index, bg_color, options, target_style='right')
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img, f"data:image/png;base64,{img_str}"
 
-# Generate 300 variations and prepare for 100 GIFs
+# Generate 300 variations (NFTs) and store images
 def generate_nft_collection(base_image, options, prompt):
     print("Creating 300 unique variations...")
     colors = generate_unique_colors(300)
@@ -84,8 +86,15 @@ def generate_nft_collection(base_image, options, prompt):
         variations.append(variation)
         images.append(img)
     
-    # Generate 100 unique GIFs from the 300 images (3 frames each, non-overlapping)
+    print(f"Generated {len(variations)} variations")
+    return variations, images
+
+# Generate 100 unique GIFs from existing NFT images, with hashes
+def generate_gifs(images, options, prompt):
+    print("Creating 100 unique GIFs...")
     gifs = []
+    gif_hashes = {}  # Store GIF paths and their hashes
+    
     for i in range(0, 300, 3):  # Step by 3 to use 3 images per GIF
         if i + 2 < 300:  # Ensure we have 3 images
             gif_frames = [images[i], images[i + 1], images[i + 2]]
@@ -102,12 +111,27 @@ def generate_nft_collection(base_image, options, prompt):
             
             gif_path = os.path.join(output_dir, f"gif_{prompt[:10] if prompt else 'uploaded'}_{i//3:03d}_{random.randint(0, 9999)}.gif")
             gif_frames[0].save(gif_path, save_all=True, append_images=gif_frames[1:], duration=150, loop=0)
+            
+            # Generate SHA-256 hash for the GIF
             with open(gif_path, "rb") as gif_file:
-                gif_str = base64.b64encode(gif_file.read()).decode("utf-8")
-            gifs.append(gif_str)
+                gif_binary = gif_file.read()
+                gif_hash = hashlib.sha256(gif_binary).hexdigest()
+            gif_hashes[gif_path] = gif_hash
+            
+            # Debug: Read and encode GIF as base64 (for UI, though rendering issue noted)
+            with open(gif_path, "rb") as gif_file:
+                gif_binary = gif_file.read()
+                gif_str = base64.b64encode(gif_binary).decode("utf-8")
+                print(f"GIF {i//3} base64 length: {len(gif_str)}")  # Debug size
+            gifs.append(f"data:image/gif;base64,{gif_str}")
     
-    print(f"Generated {len(variations)} variations and {len(gifs)} GIFs")
-    return variations, gifs
+    # Save hashes to a JSON file for blockchain use
+    hash_file = os.path.join(output_dir, "gif_hashes.json")
+    with open(hash_file, "w") as f:
+        json.dump(gif_hashes, f, indent=4)
+    print(f"Generated {len(gifs)} GIFs and saved hashes to {hash_file}")
+    
+    return gifs
 
 # Premium feature checker (set to True for testing)
 def is_premium_user():
@@ -144,11 +168,11 @@ def home():
             base_image = generate_base_image(prompt)
         
         # Generate NFTs
-        variations, _ = generate_nft_collection(base_image, options, prompt)
+        variations, images = generate_nft_collection(base_image, options, prompt)
         
         # Generate GIFs (premium enabled for testing)
         if is_premium_user():
-            _, gifs = generate_nft_collection(base_image, options, prompt)
+            gifs = generate_gifs(images, options, prompt)
         else:
             print("GIF creation requires premium access")
     
