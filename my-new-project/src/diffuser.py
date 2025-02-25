@@ -22,8 +22,8 @@ output_dir = "nfts"
 os.makedirs(output_dir, exist_ok=True)
 
 # Pinata API credentials (replace with your keys)
-PINATA_API_KEY = "bf0783c6c7e239baf57c"  # Replace with your Pinata API key
-PINATA_SECRET_API_KEY = "88b18093b01d30c8af21be5bb6d50f6d7ce914b8f4fe463d2d22859588622340"  # Replace with your Pinata secret API key
+PINATA_API_KEY = "YOUR_PINATA_API_KEY"  # Replace with your Pinata API key
+PINATA_SECRET_API_KEY = "YOUR_PINATA_SECRET_API_KEY"  # Replace with your Pinata secret API key
 
 # Load Stable Diffusion model
 print("Torch version:", torch.__version__)
@@ -156,9 +156,9 @@ def generate_gifs(images, options, prompt, description):
     metadata = {}
     for gif_filename, gif_ipfs_hash in gif_ipfs_hashes.items():
         gif_hash = gif_hashes[os.path.join(output_dir, gif_filename)]
-        # Use the hash as part of the name for consistency
-        name = f"Cyberpunk Robot GIF #{gif_filename.split('.')[0]}"
-        metadata[f"nft_{gif_filename.split('.')[0]}"] = {
+        # Ensure name is set correctly using the hash
+        name = f"Cyberpunk Robot GIF #{gif_hash}"  # Use the full hash for uniqueness
+        metadata[f"nft_{gif_hash}"] = {
             "name": name,
             "description": description,  # Use user-provided description
             "hash": gif_hash,
@@ -191,9 +191,10 @@ def generate_gifs(images, options, prompt, description):
     
     # Clean up temp folder after successful upload
     try:
-        shutil.rmtree(temp_dir)
-        os.makedirs(temp_dir, exist_ok=True)  # Recreate empty temp folder
-        print(f"Cleaned up {temp_dir} folder to save space")
+        if os.path.exists(temp_dir) and os.listdir(temp_dir):
+            shutil.rmtree(temp_dir)
+            os.makedirs(temp_dir, exist_ok=True)  # Recreate empty temp folder
+            print(f"Cleaned up {temp_dir} folder to save space")
     except Exception as e:
         print(f"Failed to clean up {temp_dir}: {e}")
     

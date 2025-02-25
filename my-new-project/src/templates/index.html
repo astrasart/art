@@ -142,7 +142,7 @@
                 {% endfor %}
             </div>
             {% if gifs %}
-                <h3>Showing {{ len(gifs) }} Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
+                <h3>Showing {{ gifs|length }} Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
                 <div class="gif-gallery">
                     {% for gif in gifs %}
                         <img src="{{ gif }}" alt="GIF Variation">
