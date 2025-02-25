@@ -34,7 +34,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
-        input[type="text"], input[type="file"] {
+        input[type="text"], input[type="file"], input[type="number"] {
             padding: 12px;
             font-size: 16px;
             border: 1px solid #444;
@@ -115,6 +115,8 @@
         <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
             <input type="text" name="prompt" placeholder="Enter a prompt (optional if uploading)" value="{{ prompt or '' }}">
             <input type="file" name="image" accept="image/*">
+            <input type="number" name="num_gifs" min="1" max="100" value="100" placeholder="Number of GIFs (1-100)">
+            <input type="text" name="description" placeholder="NFT Description (e.g., 'A futuristic robot GIF with flashing effects')" value="A futuristic robot GIF with flashing blue neon effects.">
             <div class="options">
                 <label><input type="checkbox" name="hue"> Hue Shift</label>
                 <label><input type="checkbox" name="brightness"> Brightness</label>
@@ -122,8 +124,8 @@
                 <label><input type="checkbox" name="posterize"> Posterize</label>
                 <label><input type="checkbox" name="neon"> Neon Border</label>
             </div>
-            <button type="submit" id="generateBtn">Generate 300 NFTs</button>
-            <button type="submit" name="create_gifs" id="createGifsBtn" {% if not gifs %}disabled{% endif %}>Create 100 GIFs (Premium)</button>
+            <button type="submit" id="generateBtn">Generate NFTs and GIFs</button>
+            <button type="submit" name="create_gifs" id="createGifsBtn" {% if not gifs %}disabled{% endif %}>Create GIFs (Premium)</button>
             {% if not gifs %}
                 <div class="premium">GIF creation requires premium access.</div>
             {% endif %}
@@ -140,14 +142,14 @@
                 {% endfor %}
             </div>
             {% if gifs %}
-                <h3>Showing 100 Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
+                <h3>Showing {{ len(gifs) }} Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
                 <div class="gif-gallery">
                     {% for gif in gifs %}
                         <img src="{{ gif }}" alt="GIF Variation">
                     {% endfor %}
                 </div>
             {% endif %}
-            <div class="info">All {{ total_nfts }} NFTs saved in the 'nfts' folder. GIFs (if created) saved in 'nfts' folder.</div>
+            <div class="info">All {{ total_nfts }} NFTs saved in 'temp' folder (temporarily). GIFs saved in 'nfts' folder and uploaded to Pinata.</div>
         {% endif %}
     </div>
 </body>

@@ -8,6 +8,7 @@ import random
 import os
 import colorsys
 import hashlib
+import shutil
 from werkzeug.utils import secure_filename
 import json
 import requests
@@ -15,6 +16,8 @@ import requests
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+temp_dir = "temp"
+os.makedirs(temp_dir, exist_ok=True)
 output_dir = "nfts"
 os.makedirs(output_dir, exist_ok=True)
 
@@ -33,8 +36,8 @@ pipe = pipe.to(device)
 pipe.enable_attention_slicing()
 print(f"Model loaded on {device}")
 
-# Generate 300 distinct RGB colors (blues/neons for right image style)
-def generate_unique_colors(count=300):
+# Generate distinct RGB colors (blues/neons for right image style)
+def generate_unique_colors(count):
     colors = []
     for i in range(count):
         hue = (i / count) * 0.7  # Focus on blue/neon hues (0.5-0.7 range)
@@ -70,7 +73,7 @@ def create_variation(base_image, index, bg_color, options, target_style='right')
         draw.rectangle([0, 0, img.width, img.height], outline=neon_color, width=15)
         print(f"NFT {index}: Applied neon border (blue)")
     
-    filename = f"{output_dir}/nft_{index:03d}.png"
+    filename = os.path.join(temp_dir, f"nft_{index:03d}.png")
     img.save(filename)
     print(f"Saved NFT {index:03d} to {filename}")
     
@@ -79,14 +82,15 @@ def create_variation(base_image, index, bg_color, options, target_style='right')
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img, f"data:image/png;base64,{img_str}"
 
-# Generate 300 variations (NFTs) and store images
-def generate_nft_collection(base_image, options, prompt):
-    print("Creating 300 unique variations...")
-    colors = generate_unique_colors(300)
+# Generate variations (NFTs) and store images in temp
+def generate_nft_collection(base_image, options, prompt, num_gifs):
+    total_images = num_gifs * 3  # Multiply GIF number by 3 for images
+    print(f"Creating {total_images} unique variations for {num_gifs} GIFs...")
+    colors = generate_unique_colors(total_images)
     variations = []
     images = []  # Store all images for GIF creation
     
-    for i in range(300):
+    for i in range(total_images):
         img, variation = create_variation(base_image, i, colors[i], options, target_style='right')
         variations.append(variation)
         images.append(img)
@@ -94,15 +98,16 @@ def generate_nft_collection(base_image, options, prompt):
     print(f"Generated {len(variations)} variations")
     return variations, images
 
-# Generate 100 unique GIFs from existing NFT images, with hashes as filenames, using Pinata REST API
-def generate_gifs(images, options, prompt):
-    print("Creating 100 unique GIFs...")
+# Generate GIFs from existing NFT images, with hashes as filenames, using Pinata REST API
+def generate_gifs(images, options, prompt, description):
+    print("Creating unique GIFs...")
     gifs = []
     gif_hashes = {}  # Store GIF paths and their hashes
     gif_ipfs_hashes = {}  # Store IPFS hashes for metadata
     
-    for i in range(0, 300, 3):  # Step by 3 to use 3 images per GIF
-        if i + 2 < 300:  # Ensure we have 3 images
+    num_gifs = len(images) // 3  # Number of GIFs based on available images
+    for i in range(0, len(images), 3):  # Step by 3 to use 3 images per GIF
+        if i + 2 < len(images):  # Ensure we have 3 images
             gif_frames = [images[i], images[i + 1], images[i + 2]]
             
             # Apply drastic changes for flashing effect
@@ -147,19 +152,15 @@ def generate_gifs(images, options, prompt):
                 print(f"Failed to upload {gif_path} to Pinata: {e}")
                 continue
     
-    # Save hashes to a JSON file for blockchain use
-    hash_file = os.path.join(output_dir, "gif_hashes.json")
-    with open(hash_file, "w") as f:
-        json.dump(gif_hashes, f, indent=4)
-    print(f"Generated {len(gifs)} GIFs and saved hashes to {hash_file}")
-    
     # Generate and upload metadata to Pinata via REST API
     metadata = {}
     for gif_filename, gif_ipfs_hash in gif_ipfs_hashes.items():
         gif_hash = gif_hashes[os.path.join(output_dir, gif_filename)]
+        # Use the hash as part of the name for consistency
+        name = f"Cyberpunk Robot GIF #{gif_filename.split('.')[0]}"
         metadata[f"nft_{gif_filename.split('.')[0]}"] = {
-            "name": f"Cyberpunk Robot GIF #{gif_filename.split('_')[-1].split('.')[0]}",
-            "description": "A futuristic robot GIF with flashing blue neon effects.",
+            "name": name,
+            "description": description,  # Use user-provided description
             "hash": gif_hash,
             "image": f"ipfs://{gif_ipfs_hash}",
             "attributes": [
@@ -187,6 +188,14 @@ def generate_gifs(images, options, prompt):
         print(f"Metadata uploaded to Pinata with hash: ipfs://{metadata_ipfs_hash}")
     except requests.RequestException as e:
         print(f"Failed to upload metadata to Pinata: {e}")
+    
+    # Clean up temp folder after successful upload
+    try:
+        shutil.rmtree(temp_dir)
+        os.makedirs(temp_dir, exist_ok=True)  # Recreate empty temp folder
+        print(f"Cleaned up {temp_dir} folder to save space")
+    except Exception as e:
+        print(f"Failed to clean up {temp_dir}: {e}")
     
     return gifs
 
@@ -222,6 +231,12 @@ def home():
             'neon': 'neon' in request.form
         }
         
+        num_gifs = int(request.form.get("num_gifs", 100))  # Default to 100 if not specified
+        description = request.form.get("description", "A futuristic robot GIF with flashing blue neon effects.")  # Default description
+        
+        if num_gifs < 1 or num_gifs > 100:
+            return render_template("index.html", error="Number of GIFs must be between 1 and 100")
+        
         if 'image' in request.files and request.files['image'].filename:
             file = request.files['image']
             filename = secure_filename(file.filename)
@@ -236,12 +251,12 @@ def home():
                 return render_template("index.html", error="Please provide a prompt or upload an image")
             base_image = generate_base_image(prompt)
         
-        # Generate NFTs
-        variations, images = generate_nft_collection(base_image, options, prompt)
+        # Generate NFTs and GIFs
+        variations, images = generate_nft_collection(base_image, options, prompt, num_gifs)
         
         # Generate GIFs (premium enabled for testing)
         if is_premium_user():
-            gifs = generate_gifs(images, options, prompt)
+            gifs = generate_gifs(images, options, prompt, description)
         else:
             print("GIF creation requires premium access")
     
