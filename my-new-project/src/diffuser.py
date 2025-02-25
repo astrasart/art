@@ -10,12 +10,17 @@ import colorsys
 import hashlib
 from werkzeug.utils import secure_filename
 import json
+import requests
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 output_dir = "nfts"
 os.makedirs(output_dir, exist_ok=True)
+
+# Pinata API credentials (replace with your keys)
+PINATA_API_KEY = "bf0783c6c7e239baf57c"  # Replace with your Pinata API key
+PINATA_SECRET_API_KEY = "88b18093b01d30c8af21be5bb6d50f6d7ce914b8f4fe463d2d22859588622340"  # Replace with your Pinata secret API key
 
 # Load Stable Diffusion model
 print("Torch version:", torch.__version__)
@@ -89,11 +94,12 @@ def generate_nft_collection(base_image, options, prompt):
     print(f"Generated {len(variations)} variations")
     return variations, images
 
-# Generate 100 unique GIFs from existing NFT images, with hashes
+# Generate 100 unique GIFs from existing NFT images, with hashes as filenames, using Pinata REST API
 def generate_gifs(images, options, prompt):
     print("Creating 100 unique GIFs...")
     gifs = []
     gif_hashes = {}  # Store GIF paths and their hashes
+    gif_ipfs_hashes = {}  # Store IPFS hashes for metadata
     
     for i in range(0, 300, 3):  # Step by 3 to use 3 images per GIF
         if i + 2 < 300:  # Ensure we have 3 images
@@ -109,21 +115,37 @@ def generate_gifs(images, options, prompt):
                     frame = ImageEnhance.Contrast(frame).enhance(1.5 + j * 0.5)
                 gif_frames[j] = frame
             
-            gif_path = os.path.join(output_dir, f"gif_{prompt[:10] if prompt else 'uploaded'}_{i//3:03d}_{random.randint(0, 9999)}.gif")
+            # Generate SHA-256 hash for the GIF content
+            gif_binary = BytesIO()
+            gif_frames[0].save(gif_binary, format="GIF", save_all=True, append_images=gif_frames[1:], duration=150, loop=0)
+            gif_hash = hashlib.sha256(gif_binary.getvalue()).hexdigest()
+            
+            # Use hash as filename
+            gif_filename = f"{gif_hash}.gif"
+            gif_path = os.path.join(output_dir, gif_filename)
             gif_frames[0].save(gif_path, save_all=True, append_images=gif_frames[1:], duration=150, loop=0)
             
-            # Generate SHA-256 hash for the GIF
-            with open(gif_path, "rb") as gif_file:
-                gif_binary = gif_file.read()
-                gif_hash = hashlib.sha256(gif_binary).hexdigest()
+            # Optionally, print for debugging
+            print(f"GIF {i//3} saved at {gif_path} with hash {gif_hash}")
+            gifs.append(f"data:image/gif;base64,{base64.b64encode(gif_binary.getvalue()).decode('utf-8')}")
             gif_hashes[gif_path] = gif_hash
             
-            # Debug: Read and encode GIF as base64 (for UI, though rendering issue noted)
-            with open(gif_path, "rb") as gif_file:
-                gif_binary = gif_file.read()
-                gif_str = base64.b64encode(gif_binary).decode("utf-8")
-                print(f"GIF {i//3} base64 length: {len(gif_str)}")  # Debug size
-            gifs.append(f"data:image/gif;base64,{gif_str}")
+            # Upload GIF to Pinata via REST API
+            try:
+                url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+                headers = {
+                    "pinata_api_key": PINATA_API_KEY,
+                    "pinata_secret_api_key": PINATA_SECRET_API_KEY,
+                }
+                files = {"file": (gif_filename, gif_binary.getvalue(), "image/gif")}
+                response = requests.post(url, headers=headers, files=files)
+                response.raise_for_status()  # Raise an exception for bad status codes
+                gif_ipfs_hash = response.json()["IpfsHash"]
+                print(f"Uploaded {gif_path} to Pinata with hash: ipfs://{gif_ipfs_hash}")
+                gif_ipfs_hashes[gif_filename] = gif_ipfs_hash
+            except requests.RequestException as e:
+                print(f"Failed to upload {gif_path} to Pinata: {e}")
+                continue
     
     # Save hashes to a JSON file for blockchain use
     hash_file = os.path.join(output_dir, "gif_hashes.json")
@@ -131,12 +153,59 @@ def generate_gifs(images, options, prompt):
         json.dump(gif_hashes, f, indent=4)
     print(f"Generated {len(gifs)} GIFs and saved hashes to {hash_file}")
     
+    # Generate and upload metadata to Pinata via REST API
+    metadata = {}
+    for gif_filename, gif_ipfs_hash in gif_ipfs_hashes.items():
+        gif_hash = gif_hashes[os.path.join(output_dir, gif_filename)]
+        metadata[f"nft_{gif_filename.split('.')[0]}"] = {
+            "name": f"Cyberpunk Robot GIF #{gif_filename.split('_')[-1].split('.')[0]}",
+            "description": "A futuristic robot GIF with flashing blue neon effects.",
+            "hash": gif_hash,
+            "image": f"ipfs://{gif_ipfs_hash}",
+            "attributes": [
+                {"trait_type": "Effect", "value": x} for x in [k for k, v in options.items() if v]
+            ]
+        }
+    
+    # Save metadata locally
+    metadata_file = os.path.join(output_dir, "nft_metadata.json")
+    with open(metadata_file, "w") as f:
+        json.dump(metadata, f, indent=4)
+    print(f"Generated metadata for {len(metadata)} NFTs and saved to {metadata_file}")
+    
+    # Upload metadata to Pinata via REST API
+    try:
+        url = "https://api.pinata.cloud/pinning/pinJSONToIPFS"
+        headers = {
+            "pinata_api_key": PINATA_API_KEY,
+            "pinata_secret_api_key": PINATA_SECRET_API_KEY,
+            "Content-Type": "application/json"
+        }
+        response = requests.post(url, headers=headers, json=metadata)
+        response.raise_for_status()
+        metadata_ipfs_hash = response.json()["IpfsHash"]
+        print(f"Metadata uploaded to Pinata with hash: ipfs://{metadata_ipfs_hash}")
+    except requests.RequestException as e:
+        print(f"Failed to upload metadata to Pinata: {e}")
+    
     return gifs
 
 # Premium feature checker (set to True for testing)
 def is_premium_user():
     # Temporarily assume premium access for testing
     return True  # Enable premium features during testing
+
+# Generate base image with Stable Diffusion
+def generate_base_image(prompt):
+    generator = torch.Generator(device=device).manual_seed(random.randint(0, 1000000))
+    print("Generating base image with Stable Diffusion...")
+    return pipe(
+        prompt,
+        negative_prompt="blurry, low quality, distorted, pixelated",
+        num_inference_steps=50,
+        guidance_scale=7.5,
+        generator=generator
+    ).images[0]
 
 @app.route("/", methods=["GET", "POST"])
 def home():
