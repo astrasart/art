@@ -8,7 +8,6 @@ import random
 import os
 import colorsys
 import hashlib
-import shutil
 from werkzeug.utils import secure_filename
 import json
 import requests
@@ -22,8 +21,8 @@ output_dir = "nfts"
 os.makedirs(output_dir, exist_ok=True)
 
 # Pinata API credentials (replace with your keys)
-PINATA_API_KEY = "YOUR_PINATA_API_KEY"  # Replace with your Pinata API key
-PINATA_SECRET_API_KEY = "YOUR_PINATA_SECRET_API_KEY"  # Replace with your Pinata secret API key
+PINATA_API_KEY = "bf0783c6c7e239baf57c"  # Replace with your Pinata API key
+PINATA_SECRET_API_KEY = "88b18093b01d30c8af21be5bb6d50f6d7ce914b8f4fe463d2d22859588622340"  # Replace with your Pinata secret API key
 
 # Load Stable Diffusion model
 print("Torch version:", torch.__version__)
@@ -98,7 +97,7 @@ def generate_nft_collection(base_image, options, prompt, num_gifs):
     print(f"Generated {len(variations)} variations")
     return variations, images
 
-# Generate GIFs from existing NFT images, with hashes as filenames, using Pinata REST API
+## Generate GIFs from existing NFT images, with hashes as filenames, using Pinata REST API
 def generate_gifs(images, options, prompt, description):
     print("Creating unique GIFs...")
     gifs = []
@@ -156,8 +155,8 @@ def generate_gifs(images, options, prompt, description):
     metadata = {}
     for gif_filename, gif_ipfs_hash in gif_ipfs_hashes.items():
         gif_hash = gif_hashes[os.path.join(output_dir, gif_filename)]
-        # Ensure name is set correctly using the hash
-        name = f"Cyberpunk Robot GIF #{gif_hash}"  # Use the full hash for uniqueness
+        # Set name as description concatenated with hash
+        name = f"{description} {gif_hash}"
         metadata[f"nft_{gif_hash}"] = {
             "name": name,
             "description": description,  # Use user-provided description
@@ -168,8 +167,8 @@ def generate_gifs(images, options, prompt, description):
             ]
         }
     
-    # Save metadata locally
-    metadata_file = os.path.join(output_dir, "nft_metadata.json")
+    # Save metadata locally with the name "metadata.json"
+    metadata_file = os.path.join(output_dir, "metadata.json")
     with open(metadata_file, "w") as f:
         json.dump(metadata, f, indent=4)
     print(f"Generated metadata for {len(metadata)} NFTs and saved to {metadata_file}")
@@ -188,15 +187,6 @@ def generate_gifs(images, options, prompt, description):
         print(f"Metadata uploaded to Pinata with hash: ipfs://{metadata_ipfs_hash}")
     except requests.RequestException as e:
         print(f"Failed to upload metadata to Pinata: {e}")
-    
-    # Clean up temp folder after successful upload
-    try:
-        if os.path.exists(temp_dir) and os.listdir(temp_dir):
-            shutil.rmtree(temp_dir)
-            os.makedirs(temp_dir, exist_ok=True)  # Recreate empty temp folder
-            print(f"Cleaned up {temp_dir} folder to save space")
-    except Exception as e:
-        print(f"Failed to clean up {temp_dir}: {e}")
     
     return gifs
 
