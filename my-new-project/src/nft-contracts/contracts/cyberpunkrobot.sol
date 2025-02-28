@@ -9,8 +9,8 @@ contract CyberpunkRobotNFT is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
-    // Base URI for IPFS metadata (your Pinata CID or individual GIF hashes)
-    string private baseURI = "ipfs://";  // We'll update this later with specific IPFS hashes
+    // Base URI for IPFS metadata (your Pinata CID)
+    string private baseURI = "ipfs://bafybeiei6e6swzzlxe6ivt4ux3subo2svxklwopelevrjfi54e6m2n3aae/";
 
     constructor() ERC721("CyberpunkRobotGIF", "CRGIF") {}
 
@@ -23,10 +23,15 @@ contract CyberpunkRobotNFT is ERC721, Ownable {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        return string(abi.encodePacked(baseURI, "nft_", tokenId, ".json"));  // Placeholder; update with actual IPFS paths
+        return string(abi.encodePacked(baseURI, "metadata.json"));  // Points to the metadata JSON file
     }
 
     function totalSupply() public view returns (uint256) {
         return _tokenIdCounter.current();
+    }
+
+    // Optional: Allow owner to update baseURI if Pinata CID changes
+    function setBaseURI(string memory newBaseURI) public onlyOwner {
+        baseURI = newBaseURI;
     }
 }
