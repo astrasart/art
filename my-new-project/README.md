@@ -13,8 +13,11 @@ my-new-project
 │   └── diffuser.py     # Python script for diffusion-related functionality
 └── README.md           # Project documentation
 ```
-
-## Setup Instructions
+## .env File
+# Required .env variables:
+ PINATA_API_KEY=your_api_key
+ PINATA_SECRET_API_KEY=your_secret_key
+Setup Instructions - create a .env file and place it in the root directory same foler as diffuser.py
 
 1. Clone the repository:
    ```

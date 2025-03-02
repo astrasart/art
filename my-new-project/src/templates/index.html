@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NFT Collection Generator</title>
+    <title>Astras NFT Collection Generator</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #1a1a1a;
+            font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif; /* Futuristic font */
+            background: linear-gradient(135deg, #0a0a1a, #1a1a2a); /* Dark cosmic gradient */
             color: #e0e0e0;
             margin: 0;
             padding: 20px;
@@ -14,93 +14,206 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         .container {
-            background-color: #2a2a2a;
+            background-color: rgba(30, 30, 40, 0.9); /* Semi-transparent dark background */
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 128, 0.3); /* Subtle blue shadow */
             width: 100%;
             max-width: 1200px;
+            border: 2px solid #00b4d8; /* Neon blue border for Web3 feel */
+            position: relative;
+        }
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid #00b4d8;
+            border-radius: 17px;
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
         }
         h1 {
             text-align: center;
-            color: #00b4d8;
+            color: #00b4d8; /* Neon blue */
             margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5); /* Glow effect */
+            font-size: 2.5em;
         }
         form {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 20px;
         }
         input[type="text"], input[type="file"], input[type="number"] {
             padding: 12px;
             font-size: 16px;
             border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #333;
+            border-radius: 8px;
+            background-color: #222;
             color: #e0e0e0;
             outline: none;
+            box-shadow: inset 0 0 5px rgba(0, 180, 216, 0.2);
         }
         .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .options label {
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background-color: #2a2a3a;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .options label:hover {
+            background-color: #3a3a4a;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
         button {
             padding: 12px 24px;
             font-size: 16px;
-            background-color: #00b4d8;
+            background: linear-gradient(45deg, #00b4d8, #0077b6); /* Gradient for Web3 */
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
         }
         button:hover {
-            background-color: #0093b0;
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #0077b6, #00b4d8);
         }
         button:disabled {
-            background-color: #555;
+            background: #555;
             cursor: not-allowed;
+            box-shadow: none;
         }
         #loading {
             display: none;
             text-align: center;
             color: #00b4d8;
             margin-top: 10px;
+            text-shadow: 0 0 5px rgba(0, 180, 216, 0.5);
         }
         .gallery, .gif-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
             justify-content: center;
             max-height: 600px;
             overflow-y: auto;
-            padding: 10px;
-            background-color: #333;
-            border-radius: 5px;
+            padding: 15px;
+            background-color: #2a2a3a;
+            border-radius: 10px;
+            border: 1px solid #00b4d8;
         }
         .gallery img, .gif-gallery img {
-            width: 100px;
-            height: 100px;
+            width: 100%;
+            height: 120px;
             object-fit: cover;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 128, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .gallery img:hover, .gif-gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 180, 216, 0.4);
         }
         .info, .error {
             text-align: center;
             margin-top: 20px;
+            font-size: 1.1em;
         }
         .error {
             color: #ff5555;
+            text-shadow: 0 0 5px rgba(255, 85, 85, 0.5);
         }
         .premium {
             color: #ff5555;
             margin-top: 10px;
+            text-shadow: 0 0 5px rgba(255, 85, 85, 0.5);
+        }
+        .original-image-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .original-image-section img {
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 128, 0.3);
+            border: 2px solid #00b4d8;
+        }
+        .download-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #00b4d8, #0077b6);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            display: inline-block;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #0077b6, #00b4d8);
+        }
+        /* Web3 Branding */
+        .web3-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00b4d8;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 180, 216, 0.4);
+        }
+        .web3-badge::before {
+            content: "Powered by Polygon & IPFS";
+            display: block;
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+        /* Add hexagonal pattern as background overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 0 L61.8 25 L88.4 25 L69.3 40.8 L81.1 66.3 L50 50 L18.9 66.3 L30.7 40.8 L11.6 25 L38.2 25 Z" fill="rgba(0, 180, 216, 0.05)"/></svg>') repeat;
+            z-index: -1;
+            pointer-events: none;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script>
         function showLoading() {
             document.getElementById("generateBtn").disabled = true;
@@ -111,45 +224,61 @@
 </head>
 <body>
     <div class="container">
-        <h1>NFT Collection Generator</h1>
+        <h1>Astras NFT Collection Generator</h1>
+        <div class="web3-badge">Web3 Minting Platform</div>
         <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-            <input type="text" name="prompt" placeholder="Enter a prompt (optional if uploading)" value="{{ prompt or '' }}">
+            <input type="text" name="collect_name" placeholder="Enter NFT Collection Name (e.g., 'Astras')" value="{{ collect_name or '' }}">
+            <input type="text" name="artist_name" placeholder="Enter Artist Name (e.g., 'Satoshi Nakamoto')" value="{{ artist_name or '' }}">
+            <input type="text" name="prompt" placeholder="Enter a Web3-inspired prompt (e.g., 'Neon Cyberpunk NFT')" value="{{ prompt or '' }}">
             <input type="file" name="image" accept="image/*">
-            <input type="number" name="num_gifs" min="1" max="100" value="100" placeholder="Number of GIFs (1-100)">
-            <input type="text" name="description" placeholder="NFT Description (e.g., 'A futuristic robot GIF with flashing effects')" value="A futuristic robot GIF with flashing blue neon effects.">
+            <input type="number" name="num_gifs" min="1" max="100" placeholder="Number of NFTs/GIFs (1-100)">
+            <input type="text" name="description" placeholder="NFT Description (e.g., 'Decentralized Cyber Art')">
             <div class="options">
                 <label><input type="checkbox" name="hue"> Hue Shift</label>
                 <label><input type="checkbox" name="brightness"> Brightness</label>
                 <label><input type="checkbox" name="contrast"> Contrast</label>
                 <label><input type="checkbox" name="posterize"> Posterize</label>
-                <label><input type="checkbox" name="neon"> Neon Border</label>
+                <label><input type="checkbox" name="pixelate"> Pixelate</label>
+                <label><input type="checkbox" name="invert"> Invert</label>
+                <label><input type="checkbox" name="blur"> Blur</label>
+                <label><input type="checkbox" name="sharpen"> Sharpen</label>
+                <label><input type="checkbox" name="emboss"> Emboss</label>
+                <label><input type="checkbox" name="edge"> Edge</label>
             </div>
-            <button type="submit" id="generateBtn">Generate NFTs and GIFs</button>
+            <button type="submit" id="generateBtn">Generate Web3 NFTs & GIFs</button>
             <button type="submit" name="create_gifs" id="createGifsBtn" {% if not gifs %}disabled{% endif %}>Create GIFs (Premium)</button>
             {% if not gifs %}
-                <div class="premium">GIF creation requires premium access.</div>
+                <div class="premium">GIF creation requires premium Web3 access.</div>
             {% endif %}
         </form>
         <div id="loading">Generating... Please wait (~2-3 minutes)</div>
         {% if error %}
             <div class="error">{{ error }}</div>
         {% endif %}
+        {% if original_image %}
+            <div class="original-image-section">
+                <h3>Original Web3 Image</h3>
+                <img src="{{ original_image }}" alt="Original Web3 Image">
+                <br>
+                <a href="{{ url_for('download_original') }}" class="download-btn">Download Original NFT</a>
+            </div>
+        {% endif %}
         {% if variations %}
-            <h3>Showing {{ total_nfts }} NFTs for: "{{ prompt or 'Uploaded Image' }}"</h3>
+            <h3>Showing {{ total_nfts }} Unique NFTs for: "{{ prompt or 'Uploaded Web3 Image' }}"</h3>
             <div class="gallery">
                 {% for var in variations %}
-                    <img src="{{ var }}" alt="NFT Variation">
+                    <img src="{{ var }}" alt="Web3 NFT Variation">
                 {% endfor %}
             </div>
             {% if gifs %}
-                <h3>Showing {{ gifs|length }} Flashing GIFs for: "{{ prompt or 'Uploaded Image' }}"</h3>
+                <h3>Showing {{ gifs|length }} Animated Web3 GIFs for: "{{ prompt or 'Uploaded Web3 Image' }}"</h3>
                 <div class="gif-gallery">
                     {% for gif in gifs %}
-                        <img src="{{ gif }}" alt="GIF Variation">
+                        <img src="{{ gif }}" alt="Web3 GIF Variation">
                     {% endfor %}
                 </div>
             {% endif %}
-            <div class="info">All {{ total_nfts }} NFTs saved in 'temp' folder. GIFs saved in 'nfts' folder and uploaded to Pinata.</div>
+            <div class="info">All {{ total_nfts }} NFTs saved in 'temp' folder. GIFs saved in 'nfts' folder and uploaded to IPFS via Pinata.</div>
         {% endif %}
     </div>
 </body>

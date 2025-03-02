@@ -1,0 +1,338 @@
+{
+    "nft_aac4725ddf2f04583a8f0bf795db29623634c0a759fb0934c9ada3670d58fa2e": {
+        "name": "Base Blur (Rare)",
+        "description": "Blur",
+        "hash": "aac4725ddf2f04583a8f0bf795db29623634c0a759fb0934c9ada3670d58fa2e",
+        "image": "ipfs://QmW5qDv5wQbqY293uyFnq2azCmZXtAGTYG8SVhTG9U3Gzy",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Base"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_566e1b08867e60aba902e5d05b8b1c62c2ab8e838e2dbbb5f7873ccd3051a4cc": {
+        "name": "Blur 566e1b08867e60aba902e5d05b8b1c62c2ab8e838e2dbbb5f7873ccd3051a4cc",
+        "description": "Blur",
+        "hash": "566e1b08867e60aba902e5d05b8b1c62c2ab8e838e2dbbb5f7873ccd3051a4cc",
+        "image": "ipfs://QmPZF9w9Grsmnf1EZzdv6gyUbJprH1dy1hGfKU9UBFcJzo",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_6ae62ca61fc7a9cbd40e26319ac1c8c60fae9a90a43ca4d3cf86c408cca6d0ef": {
+        "name": "Blur 6ae62ca61fc7a9cbd40e26319ac1c8c60fae9a90a43ca4d3cf86c408cca6d0ef",
+        "description": "Blur",
+        "hash": "6ae62ca61fc7a9cbd40e26319ac1c8c60fae9a90a43ca4d3cf86c408cca6d0ef",
+        "image": "ipfs://QmXEu9Akimog25tgiXni5dxW4mehoX2ATBrxbudddkR8KN",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_7c787cf9f6dfe0c68b7997bcad301a56ffd01bec8eb169d17a4658f8f778b50c": {
+        "name": "Blur 7c787cf9f6dfe0c68b7997bcad301a56ffd01bec8eb169d17a4658f8f778b50c",
+        "description": "Blur",
+        "hash": "7c787cf9f6dfe0c68b7997bcad301a56ffd01bec8eb169d17a4658f8f778b50c",
+        "image": "ipfs://QmXYoNdiPyRvQvCuHnRjFnLPKSQHAHMgRcGo1YMEuFLiHq",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_32b6315d8beb2df903223ca7ac8ecc709bff12f382ee0f03dd03459a10c7d34e": {
+        "name": "Blur 32b6315d8beb2df903223ca7ac8ecc709bff12f382ee0f03dd03459a10c7d34e",
+        "description": "Blur",
+        "hash": "32b6315d8beb2df903223ca7ac8ecc709bff12f382ee0f03dd03459a10c7d34e",
+        "image": "ipfs://QmPxoZ1QLDsiSg3tDRzZqD32As8nf4VzaK7BJz7hKecz8w",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_0d1f38c38c34a80b4f46b846a2e01578fe000405f6b0f026840618744e4de262": {
+        "name": "Blur 0d1f38c38c34a80b4f46b846a2e01578fe000405f6b0f026840618744e4de262",
+        "description": "Blur",
+        "hash": "0d1f38c38c34a80b4f46b846a2e01578fe000405f6b0f026840618744e4de262",
+        "image": "ipfs://Qmf2YTZEYMmaUsFADnYsjyBhZhXmevff9Ebphvp59cBpbs",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_e13a9adb4d98a83ba7042d60ba275fbca0e9337ed6f39829c936d26dbce637f5": {
+        "name": "Blur e13a9adb4d98a83ba7042d60ba275fbca0e9337ed6f39829c936d26dbce637f5",
+        "description": "Blur",
+        "hash": "e13a9adb4d98a83ba7042d60ba275fbca0e9337ed6f39829c936d26dbce637f5",
+        "image": "ipfs://QmTiSMRy2cfBpw5R9DQJxXuT4ie5tnE7Wm1kpgNuou4cFR",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_408bb06b24cfbc7a13261dcb29e4901a58276f4c8e196c49b15cc7ca10540142": {
+        "name": "Blur 408bb06b24cfbc7a13261dcb29e4901a58276f4c8e196c49b15cc7ca10540142",
+        "description": "Blur",
+        "hash": "408bb06b24cfbc7a13261dcb29e4901a58276f4c8e196c49b15cc7ca10540142",
+        "image": "ipfs://Qmddw6E3e6Nr65GtQHqgDAd5N7VpAHCvTdd1cKZ5qfYAvF",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_f47be8f7df321cb8f13f5fbb44803704b15ecaa60cbe608058c00453135d7827": {
+        "name": "Blur f47be8f7df321cb8f13f5fbb44803704b15ecaa60cbe608058c00453135d7827",
+        "description": "Blur",
+        "hash": "f47be8f7df321cb8f13f5fbb44803704b15ecaa60cbe608058c00453135d7827",
+        "image": "ipfs://QmTp4dWK3H5CqKLRn6DvWd9mrnyFrxi4T8PAWv89tCPyFQ",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_a0c668d56e1f316da7aa237fa5d5c657e6f8d36ac3c691d4c902ad61a4978c1b": {
+        "name": "Blur a0c668d56e1f316da7aa237fa5d5c657e6f8d36ac3c691d4c902ad61a4978c1b",
+        "description": "Blur",
+        "hash": "a0c668d56e1f316da7aa237fa5d5c657e6f8d36ac3c691d4c902ad61a4978c1b",
+        "image": "ipfs://QmYBN4xverM9KHD7wnxLoDm6SHYQpQeFB8rzNjw1QueXKz",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_8bbd09728bec1192d420f88ad4c7b9098ec5dde24e0d9554564b83373d38c58d": {
+        "name": "Blur 8bbd09728bec1192d420f88ad4c7b9098ec5dde24e0d9554564b83373d38c58d",
+        "description": "Blur",
+        "hash": "8bbd09728bec1192d420f88ad4c7b9098ec5dde24e0d9554564b83373d38c58d",
+        "image": "ipfs://QmQV4qwcMPJraAKG41AfT8L74xqWjcZdzYJjazMN7de6rf",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_5ae7e581e79de8d78105b0a53671d02e0948535efe0b30127ad15169387bb115": {
+        "name": "Blur 5ae7e581e79de8d78105b0a53671d02e0948535efe0b30127ad15169387bb115",
+        "description": "Blur",
+        "hash": "5ae7e581e79de8d78105b0a53671d02e0948535efe0b30127ad15169387bb115",
+        "image": "ipfs://QmdS7ZqBN1MYs2XEYT7Wjp6guxpKwpjGDghrP4ESYEvoHp",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_00950a5e21486b36e477768ccbfd739b58a0f48561e75f989a8757137cab26f6": {
+        "name": "Blur 00950a5e21486b36e477768ccbfd739b58a0f48561e75f989a8757137cab26f6",
+        "description": "Blur",
+        "hash": "00950a5e21486b36e477768ccbfd739b58a0f48561e75f989a8757137cab26f6",
+        "image": "ipfs://Qmev666mcSE2tHF1LQKkdXftedS4bfJXDA7e5YAjBqjUxY",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_255db1bd85589fd4f4068f54cf76c4db5ae5b16a1431798fc81d62d1588286ce": {
+        "name": "Blur 255db1bd85589fd4f4068f54cf76c4db5ae5b16a1431798fc81d62d1588286ce",
+        "description": "Blur",
+        "hash": "255db1bd85589fd4f4068f54cf76c4db5ae5b16a1431798fc81d62d1588286ce",
+        "image": "ipfs://QmPYYy3r4Rd2kMtPSGzNtqMEchJLRyhuXas66sRwkxegrz",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_0500455fa374e58b09ba6a384ef9f897033242c108ecb57110deff54dbe2b9b2": {
+        "name": "Blur 0500455fa374e58b09ba6a384ef9f897033242c108ecb57110deff54dbe2b9b2",
+        "description": "Blur",
+        "hash": "0500455fa374e58b09ba6a384ef9f897033242c108ecb57110deff54dbe2b9b2",
+        "image": "ipfs://QmUgVc2oEXWSaJHKgrpZkybtFZRzg2k7vUH1UrN1brhTy4",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_1e68df484aeb88bcce139c56d64c5688606ef0c6ca43b310f588f89a8504aa0c": {
+        "name": "Blur 1e68df484aeb88bcce139c56d64c5688606ef0c6ca43b310f588f89a8504aa0c",
+        "description": "Blur",
+        "hash": "1e68df484aeb88bcce139c56d64c5688606ef0c6ca43b310f588f89a8504aa0c",
+        "image": "ipfs://QmdxxV6GMKrwdeSLDVi7Euj4tZR4jE6zFTVXDNzHdtwoS3",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_f4b70930729ec18dce039bce35310b2ee86360c7e0e5884a3a340795c3ab691a": {
+        "name": "Blur f4b70930729ec18dce039bce35310b2ee86360c7e0e5884a3a340795c3ab691a",
+        "description": "Blur",
+        "hash": "f4b70930729ec18dce039bce35310b2ee86360c7e0e5884a3a340795c3ab691a",
+        "image": "ipfs://QmeSZW5Z4R8atAxttPBPQGRo3R7j3X6wHE2kV9zw4nVe87",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "Variation"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_2132914140d1124ff036b1962354fab4c72bafb2e95a842111f6f4dd33a1ee2a": {
+        "name": "Blur 2132914140d1124ff036b1962354fab4c72bafb2e95a842111f6f4dd33a1ee2a",
+        "description": "Blur",
+        "hash": "2132914140d1124ff036b1962354fab4c72bafb2e95a842111f6f4dd33a1ee2a",
+        "image": "ipfs://QmaNmqqtSUuv7V7y31xpeHLnvLhcxnipqroLZyCmYatVCf",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "GIF"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_d44fc8bcc67612a3a3b94e92167a59d4f4247979aeda78bc8e94f3363b61d3ad": {
+        "name": "Blur d44fc8bcc67612a3a3b94e92167a59d4f4247979aeda78bc8e94f3363b61d3ad",
+        "description": "Blur",
+        "hash": "d44fc8bcc67612a3a3b94e92167a59d4f4247979aeda78bc8e94f3363b61d3ad",
+        "image": "ipfs://QmYRGC1pHVVAkHhAvSvbiTnyw6wgBkY9bryJRVyi3b9umQ",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "GIF"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_e7810b2450c094c759f56928c7fee318edca4facb5dc832b84486af3f763b7a7": {
+        "name": "Blur e7810b2450c094c759f56928c7fee318edca4facb5dc832b84486af3f763b7a7",
+        "description": "Blur",
+        "hash": "e7810b2450c094c759f56928c7fee318edca4facb5dc832b84486af3f763b7a7",
+        "image": "ipfs://QmauNdg2Wk23UGwYTVer8ETAVDeSbHBr2ZGrsQcg72Ur5K",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "GIF"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    },
+    "nft_763f317e36133bef651ab5302af7307716b3f0b28afffebc7d15a6818035c19e": {
+        "name": "Blur 763f317e36133bef651ab5302af7307716b3f0b28afffebc7d15a6818035c19e",
+        "description": "Blur",
+        "hash": "763f317e36133bef651ab5302af7307716b3f0b28afffebc7d15a6818035c19e",
+        "image": "ipfs://QmPajtNce4pi9prxtqKgHF4f9rWTaGwVsJFFFShebZkCwq",
+        "attributes": [
+            {
+                "trait_type": "Type",
+                "value": "GIF"
+            },
+            {
+                "trait_type": "Effect",
+                "value": "blur"
+            }
+        ]
+    }
+}
